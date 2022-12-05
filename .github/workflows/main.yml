@@ -1,0 +1,33 @@
+env:
+  DOCKER_NAME: reumi/myimage
+  
+name: GitHub Actions Demo
+run-name: Testing github actions
+on:
+  push:
+    branches: [ main ]
+jobs:
+  audit:
+    name: npm audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: install dependencies
+        run: npm ci
+      - name: audit
+        continue-on-error: true
+        run: npm audit
+  docker_image-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag $DOCKER_NAME:latest
+      - name: Push to ECR
+        id: ecr
+        uses: jwalton/gh-ecr-push@v1
+        with:
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: us-east-1
+          image: $DOCKER_NAME:latest

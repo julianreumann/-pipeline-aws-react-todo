@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todoapp-deployment
+  labels:
+    yourapp: todoapp
+    infra: internal
+    fh: campus
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      yourapp: todoapp
+  template:
+    metadata:
+      labels:
+        yourapp: todoapp
+    spec:
+      containers:
+      - name: todoapp
+        image: reumi/myimage:1.0.0
+        ports:
+        - containerPort: 3000
